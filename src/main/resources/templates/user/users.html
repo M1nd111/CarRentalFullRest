@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>АрендАвто</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <style>
+        body {
+            background: url('https://www.funnyart.club/uploads/posts/2021-12/1640206291_44-www-funnyart-club-p-razmitie-foni-s-mashinami-46.jpg') no-repeat center center fixed;
+            background-size: cover;
+            overflow: hidden;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            display: flex;
+        }
+
+        .background {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: -1;
+            transform: translate(0px, 0px);
+            transition: transform 0.1s ease-out;
+        }
+
+        header {
+            width: 100%;
+            background-color: #2EACC7;
+            padding: 20px;
+            color: white;
+            display: flex;
+            align-items: center;
+            position: absolute;
+            top: 0;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .logo {
+            margin-left: 20px;
+            margin-right: 20px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            margin-left: auto;
+        }
+
+        .search-button, .delete-button, .add-button {
+            margin-right: 20px;
+            padding: 10px 20px;
+            background-color: #2EACC7;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-left: 10px;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .debug-button, .save-button, .download-button, .create-button {
+            margin-right: 20px;
+            padding: 10px 20px;
+            background-color: #2EACC7;
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.22);
+            border-radius: 4px;
+            cursor: pointer;
+            margin-left: 10px;
+            font-size: 13px;
+        }
+
+        .search-button:hover, .delete-button:hover, .add-button:hover, .debug-button:hover,
+        .save-button:hover, .download-button:hover, .create-button:hover {
+            background-color: #077D97;
+        }
+
+
+        .contentModel button {
+            align-self: center;
+            padding: 5px 10px;
+            background-color: #2EACC7;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .content {
+            background: #FFFFFF;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            margin-top: 100px;
+        }
+
+        .content form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .content label {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .content div {
+            display: flex;
+            gap: 15px;
+        }
+
+        .content button {
+            align-self: center;
+            padding: 10px 20px;
+            background-color: #2EACC7;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .content button:hover {
+            background-color: #077D97;
+        }
+
+        .modalCreate {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            top: 10%;
+            left: 53%;
+            transform: translateX(-50%);
+            width: 25%;
+            height: 50%;
+            padding: 30px;
+            border-radius: 8px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            top: 10%;
+            left: 87%;
+            transform: translateX(-50%);
+            width: 25%;
+            height: 50%;
+            padding: 30px;
+            border-radius: 8px;
+        }
+        .modalDebug {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            align-self: center;
+            width: 70%; /* Ширина окна */
+            height: 70%; /* Высота окна */
+            padding: 30px;
+            border-radius: 8px;
+        }
+
+        .modalDebug-content {
+            background-color: #fefefe;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 100%; /* Измените ширину на 100% */
+            height: 100%; /* Измените высоту на 100% */
+            box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+            border-radius: 8px;
+            white-space: nowrap; /* Запрещаем перенос строк */
+            overflow-x: auto; /* Добавляем горизонтальную прокрутку */
+            overflow-y: auto; /* Добавляем вертикальную прокрутку */
+        }
+
+        .modalSearch {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            align-self: center;
+            width: 50%; /* Ширина окна */
+            height: 50%; /* Высота окна */
+            padding: 30px;
+            border-radius: 8px;
+        }
+
+        .modalSearch-content {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center; /* Центрирование текста */
+            background-color: #fefefe;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 100%;
+            height: 100%;
+            box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+            border-radius: 8px;
+            overflow-y: auto;
+        }
+
+        .modal-content, .modalCreate-content, .modalAdd-content, .modalDell-content {
+            background-color: #fefefe;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+            border-radius: 8px;
+        }
+
+        .close, .closeCreate, .closeAdd, .closeDell, .closeDebug, .closeSearch{
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus,
+        .closeCreate:focus,
+        .closeCreate:hover,
+        .closeAdd:hover, .closeDell:hover,
+        .closeAdd:focus, .closeDell:focus,
+        .closeDebug:focus, .closeDebug:hover,
+        .closeSearch:focus, .closeSearch:hover{
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .modal-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .modal-form label{
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal-form input[type="text"],
+        .modal-form input[type="date"] {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .modal-form input[type="text"]:focus,
+        .modal-form input[type="date"]:focus {
+            border-color: #2EACC7;
+            box-shadow: 0 0 8px rgba(46, 172, 199, 0.5);
+            outline: none;
+        }
+
+        .modal-form button {
+            align-self: center;
+            padding: 10px 20px;
+            background-color: #2EACC7;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .modal-form button:hover {
+            background-color: #077D97;
+        }
+
+        .table-header th {
+            padding-right: 20px;
+            color: #fefefe;
+        }
+        /* Стили для формы */
+        .form-container {
+            width: 750px;
+            height: 400px;
+            overflow-y: scroll;
+            overflow-x: hidden;
+            padding: 10px;
+        }
+
+        /* Стили для таблицы */
+        .record-table {
+            width: 100%;
+            border-collapse: collapse;
+            border-spacing: 20px;
+        }
+
+        .record-table th, .record-table td {
+            padding: 8px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .record-table th {
+            background-color: rgba(46, 172, 199, 0.66);
+            padding: 6px 15px;
+            width: 100px;
+            text-align: center;
+        }
+
+    </style>
+</head>
+<body>
+<header>
+    <div class="header-left">
+        <div class="logo">@вто👾аренда</div>
+        <button id="debug-button" class="debug-button">Просмотр СД</button>
+        <form id="upload-form" enctype="multipart/form-data">
+            <input type="file" id="file-input" name="file" style="display:none;" />
+            <button type="button" id="download-button" class="download-button">Загрузить файл</button>
+        </form>
+        <button id="saveButton" class="save-button">Сохранить файл</button>
+        <button id="create-button" class="create-button">Создать СД</button>
+    </div>
+    <div class="header-right">
+        <button id="delete-button" class="delete-button">Удалить</button>
+        <button id="add-button" class="add-button">Добавить</button>
+        <button id="search-button" class="search-button">Поиск🔎</button>
+    </div>
+</header>
+
+<div class="background"></div>
+
+<div id="ModalDebug" class="modalDebug">
+    <div class="modalDebug-content">
+        <span class="closeDebug">&times;</span>
+        <span id="debug-result"></span>
+    </div>
+</div>
+
+<div id="ModalSearch" class="modalSearch">
+    <div class="modalSearch-content">
+        <span class="closeSearch">&times;</span>
+        <span id="search-result"></span>
+    </div>
+</div>
+
+<div id="myModalCreate" class="modalCreate">
+    <div class="modalCreate-content">
+        <span class="closeCreate">&times;</span>
+        <form id="modalCreateForm" class="modal-form" >
+            <label for="size-table">Введите размер хэш-таблицы</label>
+            <input type="number" id="size-table" name="size" placeholder="10" required>
+            <button type="button" id="createTable-button">Потдвердить</button>
+        </form>
+    </div>
+</div>
+
+<div id="myModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <form id="search-form" class="modal-form">
+
+            <label for="mark-name">Марка машины</label>
+            <input type="text" id="mark-name" name="markName" placeholder="Subaru" required>
+
+            <label>Период аренды от</label>
+            <div>
+                <input type="date" id="start-date" name="startDate" required>
+                <span>до</span>
+                <input type="date" id="end-date" name="endDate" required>
+            </div>
+
+            <button type="submit" id="searchBtn">Подтвердить</button>
+        </form>
+    </div>
+</div>
+
+<div id="modalAdd" class="modal">
+    <div class="modalAdd-content">
+        <span class="closeAdd">&times;</span>
+        <form id="modalFormAdd" name="entity" class="modal-form" th:action="@{/api/users/add}" method="post">
+            <label for="fioAdd">ФИО</label>
+            <input type="text" id="fioAdd" name="fio" required>
+
+            <label for="phone-numberAdd">Номер телефона</label>
+            <input type="text" id="phone-numberAdd" name="phoneNumber" placeholder="+7*** *** ****"  required>
+
+            <label for="brandAdd">Марка машины</label>
+            <input type="text" id="brandAdd" name="markName" placeholder="Subaru" required>
+
+            <label for="dateAddFirst">Дата с</label>
+            <input type="date" id="dateAddFirst" name="first_date" required>
+
+            <label for="dateAddLast">Дата по</label>
+            <input type="date" id="dateAddLast" name="last_date" required>
+
+            <button type="submit">Подтвердить</button>
+        </form>
+    </div>
+</div>
+
+<div id="modalDell" class="modal">
+    <div class="modalDell-content">
+        <span class="closeDell">&times;</span>
+        <form id="modalFormDell" name="entity" class="modal-form" th:action="@{/api/users/dell}" method="post">
+            <label for="fioDell">ФИО</label>
+            <input type="text" id="fioDell" name="fio"  required>
+
+            <label for="phone-numberDell">Номер телефона</label>
+            <input type="text" id="phone-numberDell" name="phoneNumber" placeholder="+7*** *** ****"  required>
+
+            <label for="brandDell">Марка машины</label>
+            <input type="text" id="brandDell" name="markName" placeholder="Subaru" required>
+
+            <label for="dateDellFirst">Дата с</label>
+            <input type="date" id="dateDellFirst" name="first_date" required>
+
+            <label for="dateDellLast">Дата по</label>
+            <input type="date" id="dateDellLast" name="last_date" required>
+
+            <button type="submit">Подтвердить</button>
+        </form>
+    </div>
+</div>
+
+<div class="content">
+    <form id="rental-list" class="form-container">
+        <table class="record-table">
+            <tr class="table-header">
+                <th>FIO</th>
+                <th>Phone Number</th>
+                <th>Mark Name</th>
+                <th>First date</th>
+                <th>Last date</th>
+            </tr>
+            <tr th:each="record : ${records}">
+                <td th:text="${record.fio}"></td>
+                <td th:text="${record.phoneNumber}"></td>
+                <td th:text="${record.markName}"></td>
+                <td th:text="${record.first_date}"></td>
+                <td th:text="${record.last_date}"></td>
+            </tr>
+        </table>
+    </form>
+</div>
+
+<script>
+    var createBtn = document.getElementById("create-button");
+    var deleteBtn = document.getElementById("delete-button");
+    var addBtn = document.getElementById("add-button");
+    var debugBtn = document.getElementById("debug-button");
+    var modal = document.getElementById("myModal");
+    var modalAdd = document.getElementById("modalAdd");
+    var modalDell = document.getElementById("modalDell");
+    var modalSearch = document.getElementById("ModalSearch");
+    var searchBtn = document.getElementById("search-button");
+    var modalCreate = document.getElementById("myModalCreate");
+    var modalDebug = document.getElementById("ModalDebug");
+    var span = document.getElementsByClassName("close")[0];
+    var spanCreate = document.getElementsByClassName("closeCreate")[0];
+    var spanAdd = document.getElementsByClassName("closeAdd")[0];
+    var spanDell = document.getElementsByClassName("closeDell")[0];
+    var spanDebug = document.getElementsByClassName("closeDebug")[0];
+    var buttonCreate = document.getElementsByClassName("createTable-button");
+    var upload = document.getElementsByClassName("download-button");
+    var spanSearch = document.getElementsByClassName("closeSearch")[0];
+
+
+    spanSearch.onclick = function() {
+        document.getElementById('ModalSearch').style.display = 'none';
+    }
+
+    window.onclick = function(event) {
+        if (event.target === document.getElementById('ModalSearch')) {
+            document.getElementById('ModalSearch').style.display = 'none';
+        }
+    }
+    debugBtn.onclick = function() {
+        modalDebug.style.display = "block"
+        modal.style.display = "none";
+        modalCreate.style.display = "none";
+        modalAdd.style.display = "none";
+        modalDell.style.display = "none";
+    }
+
+    upload.onclick = function() {
+        modal.style.display = "none";
+        modalCreate.style.display = "none";
+        modalAdd.style.display = "none";
+        modalDell.style.display = "none";
+        modalDebug.style.display = "none"
+
+    }
+
+    createBtn.onclick = function() {
+        modalCreate.style.display = "block";
+        modalAdd.style.display = "none";
+        modalDell.style.display = "none";
+        modal.style.display = "none";
+        modalDebug.style.display = "none"
+
+    }
+
+    deleteBtn.onclick = function() {
+        modalAdd.style.display = "none";
+        modalDell.style.display = "block";
+        modal.style.display = "none";
+        modalCreate.style.display = "none";
+        modalDebug.style.display = "none"
+
+    }
+
+    addBtn.onclick = function() {
+        modalAdd.style.display = "block";
+        modalDell.style.display = "none";
+        modal.style.display = "none";
+        modalCreate.style.display = "none";
+        modalDebug.style.display = "none"
+
+    }
+
+    searchBtn.onclick = function() {
+        modal.style.display = "block";
+        modalCreate.style.display = "none";
+        modalAdd.style.display = "none";
+        modalDell.style.display = "none";
+        modalDebug.style.display = "none"
+
+    }
+    buttonCreate.onclick = function() {
+        modal.style.display = "none";
+        modalCreate.style.display = "none";
+        modalAdd.style.display = "none";
+        modalDell.style.display = "none";
+        modalDebug.style.display = "none"
+
+    }
+    span.onclick = function() {
+        modal.style.display = "none";
+    }
+    spanCreate.onclick = function() {
+        modalCreate.style.display = "none";
+    }
+    spanAdd.onclick = function() {
+        modalAdd.style.display = "none";
+    }
+    spanDell.onclick = function() {
+        modalDell.style.display = "none";
+    }
+    spanDebug.onclick = function() {
+        modalDebug.style.display = "none";
+    }
+    window.onclick = function(event) {
+        if (event.target === modal) {
+            modal.style.display = "none";
+            modalCreate.style.display = "none";
+            modalDell.style.display = "none";
+            modalAdd.style.display = "none";
+            modalDebug.style.display = "none";
+        }
+    }
+    document.getElementById('search-form').addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        var formData = new FormData(event.target);
+
+        fetch('api/users/search', {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    // Откройте модальное окно и отобразите результаты поиска
+                    document.getElementById('search-result').innerText = data.result;
+                    document.getElementById('ModalSearch').style.display = 'block';
+                } else {
+                    // Обработка ошибок
+                    console.error('Error:', data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    });
+
+    document.getElementById('createTable-button').addEventListener('click', function () {
+        var formData = new FormData(document.getElementById('modalCreateForm'));
+
+        fetch('/api/users/create', { // Make sure the URL is correct
+            method: 'POST',
+            body: formData
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    showNotification('СД успешно создана', 'Ваша СД была успешно создана.');
+                    updateRecordTable();
+                } else {
+                    showNotification('Ошибка создания СД', data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showNotification('Ошибка', 'Произошла ошибка при создании СД.');
+            });
+    });
+
+    document.getElementById('debug-button').addEventListener('click', function () {
+        fetch('/api/users/debug', {
+            method: 'GET',
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    // Вывод результата в модальное окно
+                    document.getElementById('debug-result').innerText = data.result;
+                    modalDebug.style.display = "block";
+                } else {
+                    alert('Ошибка: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Произошла ошибка при вызове метода debug.');
+            });
+    });
+
+    document.getElementById('download-button').addEventListener('click', function() {
+        document.getElementById('file-input').click();
+    });
+
+    document.getElementById('file-input').addEventListener('change', function() {
+        var formData = new FormData(document.getElementById('upload-form'));
+
+        fetch('/api/users/upload', {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    showNotification('Файл успешно загружен', 'Ваш файл был успешно загружен на сервер.');
+                    updateRecordTable()
+                    this.reset();
+                } else {
+                    showNotification('Ошибка загрузки файла', data.message);
+                }
+            })
+            // .catch(error => {
+            //     console.error('Error:', error);
+            //     showNotification('Ошибка', 'Произошла ошибка при загрузке файла.');
+            // });
+    });
+
+    function showNotification(title, body) {
+        if (!("Notification" in window)) {
+            alert("Этот браузер не поддерживает уведомления.");
+        } else if (Notification.permission === "granted") {
+            new Notification(title, { body: body });
+        } else if (Notification.permission !== "denied") {
+            Notification.requestPermission().then(function (permission) {
+                if (permission === "granted") {
+                    new Notification(title, { body: body });
+                }
+            });
+        }
+    }
+
+    // Обработка добавления
+    document.getElementById('modalFormAdd').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        var formData = new FormData(this);
+
+        fetch('/api/users/add', {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    showNotification('Запись успешно добавлена', 'Новая запись была добавлена.');
+                    updateRecordTable(); // Обновляем таблицу
+                    this.reset();
+                } else {
+                    showNotification('Ошибка добавления записи', data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showNotification('Ошибка', 'Произошла ошибка при добавлении записи.');
+            });
+    });
+
+    //Обработка удаления
+    document.getElementById('modalFormDell').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        var formData = new FormData(this);
+
+        fetch('/api/users/delete', {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    showNotification('Запись успешно удалена', 'Запись была удалена.');
+                    updateRecordTable(); // Обновляем таблицу
+                    this.reset();
+                } else {
+                    showNotification('Ошибка удаления записи', data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showNotification('Ошибка', 'Произошла ошибка при удалении записи.');
+            });
+    });
+
+    function updateRecordTable() {
+        fetch('/api/users/all')
+            .then(response => response.json())
+            .then(records => {
+                const tableBody = document.querySelector('.record-table tbody');
+                tableBody.innerHTML = '';
+
+                const row1 = document.createElement('tr');
+                row1.innerHTML = `
+                    <th>FIO</th>
+                    <th>Phone Number</th>
+                    <th>Mark Name</th>
+                    <th>First date</th>
+                    <th>Last date</th>
+             `;
+                tableBody.appendChild(row1)
+
+                records.forEach(record => {
+                    const row2 = document.createElement('tr');
+                    row2.innerHTML = `
+                    <td>${record.fio}</td>
+                    <td>${record.phoneNumber}</td>
+                    <td>${record.markName}</td>
+                    <td>${record.first_date}</td>
+                    <td>${record.last_date}</td>
+             `;
+                    tableBody.appendChild(row2);
+                });
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    }
+
+    document.getElementById("saveButton").addEventListener("click", function() {
+        console.log("Кнопка 'Сохранить файл' нажата");
+
+        $.ajax({
+            url: '/api/users/export',
+            method: 'POST',
+            success: function(response) {
+                console.log("Ответ сервера: ", response);
+                if (response.startsWith("/api/users/download/")) {
+                    const link = document.createElement("a");
+                    link.href = response;
+                    link.download = "car_records.txt";
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                } else {
+                    alert(response);
+                }
+            },
+            error: function(err) {
+                console.error('Ошибка: ', err.responseText);
+                alert('Ошибка: ' + err.responseText);
+            }
+        });
+    });
+</script>
+</body>
+</html>
