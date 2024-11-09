@@ -1,0 +1,30 @@
+version: '3.8'
+services:
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: Root89
+      MYSQL_DATABASE: directory
+    ports:
+      - "3307:3306"
+    networks:
+      - car_rental_network
+
+  app:
+    ports:
+      - "8080:8080"
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - mysql
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/directory
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: Root89
+    networks:
+      - car_rental_network
+
+networks:
+  car_rental_network:
+    driver: bridge
