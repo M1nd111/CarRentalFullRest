@@ -42,6 +42,7 @@ dependencies {
 //    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0'
 //    implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml'
 //    implementation 'org.liquibase:liquibase-core'
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
 }
 
@@ -58,9 +59,8 @@ compileQuerydsl {
 }
 
 bootJar {
-	mainClass = 'src.main.java.spring.ws.carrentaldirectoryweb.CarRentalDirectoryWebApplication'
+	mainClass = 'spring.ws.carrentaldirectoryweb.CarRentalDirectoryWebApplication'
 }
-
 
 
 test {

@@ -5,6 +5,7 @@ import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
@@ -18,6 +19,8 @@ import spring.ws.carrentaldirectoryweb.core.Hellper.ListToDb;
 import spring.ws.carrentaldirectoryweb.core.Hellper.SearchMessage;
 import spring.ws.carrentaldirectoryweb.core.dto.RecordsReadDto;
 import spring.ws.carrentaldirectoryweb.core.dto.RecordsWebDto;
+//import spring.ws.carrentaldirectoryweb.core.repository.RecordRedisRepository;
+import spring.ws.carrentaldirectoryweb.core.repository.RecordRepository;
 import spring.ws.carrentaldirectoryweb.core.repository.RecordsRepository;
 import spring.ws.carrentaldirectoryweb.core.service.RecordsService;
 import spring.ws.carrentaldirectoryweb.sd.redBlackTree.RedBlackTree;
@@ -47,6 +50,7 @@ public class UserRestController {
 
     @Autowired
     RecordsService recordsService;
+
     @Autowired
     RecordsRepository recordRepository;
 
@@ -82,7 +86,6 @@ public class UserRestController {
         redBlackTree.printLinesTreeWithPeriodForDate(Info.root, markName, startDate, endDate);
 
         try {
-            // Ваш метод debug, который возвращает результат
             String result = searchMessage.getString() + "\n\nШагов поиска: " + SearchMessage.step;
             response.put("status", "success");
             response.put("result", result);

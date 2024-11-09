@@ -16,11 +16,18 @@ COPY src ./src
 # Собираем проект с многопоточностью
 RUN gradle build --no-daemon -x test --max-workers=12
 
+# Проверка, есть ли файл .jar в /build/build/libs/
+RUN ls /build/build/libs/
+
 # Этап запуска
 FROM openjdk:17-jdk-alpine
 
+ENV SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/directory
+ENV SPRING_DATASOURCE_USERNAME=root
+ENV SPRING_DATASOURCE_PASSWORD=Root89
+
 # Копируем собранный JAR-файл
-COPY --from=build /build/libs/CarRentalDirectoryWeb-1.0-SNAPSHOT.jar app.jar
+COPY --from=build /build/build/libs/*.jar app.jar
 
 # Команда для запуска приложения
 ENTRYPOINT ["java", "-jar", "/app.jar"]

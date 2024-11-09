@@ -8,7 +8,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import spring.ws.carrentaldirectoryweb.core.repository.RecordRepository;
 import spring.ws.carrentaldirectoryweb.core.service.RecordsService;
 
 @Controller
@@ -16,8 +15,6 @@ import spring.ws.carrentaldirectoryweb.core.service.RecordsService;
 public class UserController {
     @Autowired
     RecordsService recordsService;
-    @Autowired
-    RecordRepository recordRepository;
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 

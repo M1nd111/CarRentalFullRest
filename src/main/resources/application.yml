@@ -4,6 +4,8 @@ spring:
       prefix: /resources/templates/
       suffix: .html
   datasource:
+    hikari:
+      connection-timeout: 30000
     url: jdbc:mysql://localhost:3306/directory
     username: root
     password: Root89
@@ -15,12 +17,16 @@ spring:
         show_sql: true
         format_sql: true
         hbm2ddl:
-          auto: validate
+          auto: update
+    database-platform: org.hibernate.dialect.MySQLDialect
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      connect-timeout: 2000ms
 
-#logging:
-#  level:
-#    root: info
-#  file:
-#    name:
-#      loggFile
-#    path: /
+      lettuce:
+        pool:
+          max-active: 8
+          max-idle: 8
+          min-idle: 0
